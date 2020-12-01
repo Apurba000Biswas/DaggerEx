@@ -3,13 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center"
     android:orientation="vertical"
     tools:context=".AuthActivity">
 
     <TextView
-        android:id="@+id/target"
+        android:onClick="onImageCamera"
+        android:padding="4dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello"
+        android:layout_height="60dp"
+        android:text="Click for Camera"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"/>
+
+
+    <TextView
+        android:onClick="onImageGallery"
+        android:padding="4dp"
+        android:gravity="center"
+        android:layout_gravity="center"
+
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:text="Click for Gallery"
+        android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"/>
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="300dp"
+        android:layout_height="300dp"/>
+
+
 </LinearLayout>
