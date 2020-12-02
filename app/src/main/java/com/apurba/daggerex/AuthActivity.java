@@ -1,7 +1,8 @@
 package com.apurba.daggerex;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
+
+import dagger.android.support.DaggerAppCompatActivity;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -20,13 +22,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import javax.inject.Inject;
 
-public class AuthActivity extends AppCompatActivity {
+
+public class AuthActivity extends DaggerAppCompatActivity {
 
     private static final int REQUEST_IMAGE_CAPTURE = 20001;
     private static final int REQ_CODE_PHOTO_GALLERY = 2001;
 
     private ImageView imageView;
+
+    @Inject
+    String whatEverTestVariableForDi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +41,9 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auth);
 
         imageView = findViewById(R.id.image_view);
+
+
+        Log.d("Test", whatEverTestVariableForDi);
     }
 
     public void onImageCamera(View view) {
