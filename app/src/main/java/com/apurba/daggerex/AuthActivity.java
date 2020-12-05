@@ -4,20 +4,28 @@ import androidx.annotation.RequiresApi;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
+import com.esafirm.imagepicker.features.ImagePicker;
+import com.esafirm.imagepicker.model.Image;
 import com.squareup.picasso.Picasso;
 
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -42,35 +50,75 @@ public class AuthActivity extends DaggerAppCompatActivity {
 
         imageView = findViewById(R.id.image_view);
 
-
         Log.d("Test", whatEverTestVariableForDi);
     }
 
     public void onImageCamera(View view) {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-        } catch (ActivityNotFoundException e) {
-            // display error state to the user
-        }
+
+        // Link : https://github.com/esafirm/android-image-picker
+        //https://guides.codepath.com/android/Displaying-Images-with-the-Picasso-Library
+        ImagePicker.cameraOnly().start(this);
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            // Get a list of picked images
+            //List<Image> images = ImagePicker.getImages(data)
+            // or get a single image only
+            Image image = ImagePicker.getFirstImageOrNull(data);
+            Toast.makeText(this, "I am here", Toast.LENGTH_SHORT).show();
+
+            Picasso.get()
+                    .load(image.getUri())
+                    .fit()
+                    .rotate(getRotation(image.getUri()))
+                    .centerCrop().into(imageView);
+        }
+
+
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             Bundle extras = data.getExtras();
             Bitmap imageBitmap = (Bitmap) extras.get("data");
             imageView.setImageBitmap(imageBitmap);
+            getEncodedImage(imageBitmap);
         }else if (requestCode == REQ_CODE_PHOTO_GALLERY && resultCode == RESULT_OK) {
 
             Uri targetUri = data.getData();
+
+
+            Bitmap getBitmap = null;
+            try {
+                InputStream image_stream;
+                try {
+                    image_stream = this.getContentResolver().openInputStream(targetUri);
+                    getBitmap = BitmapFactory.decodeStream(image_stream);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            /*
             Picasso.get()
                     .load(targetUri)
                     .fit()
                     .rotate(getRotation(targetUri))
                     .centerCrop().into(imageView);
+
+             */
+
+            imageView.setImageBitmap(getBitmap);
+
+            //******* Useful resource
+
+
+
         }
     }
 
@@ -112,5 +160,18 @@ public class AuthActivity extends DaggerAppCompatActivity {
         Intent picIntent = new Intent(Intent.ACTION_PICK,
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(picIntent, REQ_CODE_PHOTO_GALLERY);
+    }
+
+    public String getEncodedImage(Bitmap bitmap){
+        //ImageView profileImageView = rootView.findViewById(R.id.profile_image);
+        //Bitmap bitmap = ((BitmapDrawable)profileImageView.getDrawable()).getBitmap();
+
+        if (bitmap == null) return null;
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+
+        byte[] imageBytes = outputStream.toByteArray();
+        return  Base64.encodeToString(imageBytes, Base64.DEFAULT);
     }
 }
