@@ -43,6 +43,9 @@ public class AuthActivity extends DaggerAppCompatActivity {
     @Inject
     String whatEverTestVariableForDi;
 
+    @Inject
+    boolean isAppNull;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +54,7 @@ public class AuthActivity extends DaggerAppCompatActivity {
         imageView = findViewById(R.id.image_view);
 
         Log.d("Test", whatEverTestVariableForDi);
+        Log.d("Test", "OnCreate : is App Null ? " + isAppNull);
     }
 
     public void onImageCamera(View view) {
