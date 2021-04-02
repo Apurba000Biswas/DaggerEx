@@ -1,4 +1,4 @@
-package com.apurba.daggerex;
+package com.apurba.daggerex.ui;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,9 +7,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.lifecycle.ViewModelProvider;
+
+import com.apurba.daggerex.R;
+import com.apurba.daggerex.ui.viewModel.AuthViewModel;
+import com.apurba.daggerex.ui.viewModel.ViewModelProviderFactory;
 import com.bumptech.glide.RequestManager;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.jaeger.library.StatusBarUtil;
 
 import javax.inject.Inject;
@@ -27,6 +31,11 @@ public class AuthActivity extends DaggerAppCompatActivity {
 
     @Inject
     RequestManager glide;
+
+    @Inject
+    ViewModelProviderFactory providerFactory;
+
+    private AuthViewModel viewModel;
 
 
     @Override
@@ -48,6 +57,11 @@ public class AuthActivity extends DaggerAppCompatActivity {
 
         int secondsDelayed = 2;
         new Handler().postDelayed(this::setMainView, secondsDelayed * 1000);
+
+
+
+        viewModel = new ViewModelProvider(this, providerFactory).get(AuthViewModel.class);
+
     }
 
     private void setMainView(){
